@@ -1,0 +1,76 @@
+Q147:Store employee data in a binary file using fwrite() and read using fread().
+
+#include <stdio.h>
+#include <stdlib.h>
+typedef struct
+{
+    int day;
+    int month;
+    int year;
+} Date;
+
+typedef struct
+{
+    char name[50];
+    int emp_id;
+    float salary;
+    Date joining_date;
+} Employee;
+
+int main() {
+    Employee employees[NUM_EMPLOYEES];
+
+    for (int i = 0; i < NUM_EMPLOYEES; i++) 
+{
+        printf("Enter details for employee %d:\n", i + 1);
+
+        printf("Name: ");
+        scanf(" %[^\n]", employees[i].name);
+
+        printf("Employee ID: ");
+        scanf("%d", &employees[i].emp_id);
+
+        printf("Salary: ");
+        scanf("%f", &employees[i].salary);
+
+        printf("Joining Date (day month year): ");
+        scanf("%d %d %d", &employees[i].joining_date.day,
+                          &employees[i].joining_date.month,
+                          &employees[i].joining_date.year);
+        printf("\n");
+    }
+
+    FILE *fp = fopen("employees.dat", "wb");
+    if (fp == NULL) {
+        perror("Error opening file for writing");
+        return 1;
+    }
+
+    fwrite(employees, sizeof(Employee), NUM_EMPLOYEES, fp);
+    fclose(fp);
+    printf("Employee data saved to 'employees.dat'\n\n");
+    Employee readEmployees[NUM_EMPLOYEES];
+    fp = fopen("employees.dat", "rb");
+    if (fp == NULL) {
+        perror("Error opening file for reading");
+        return 1;
+    }
+
+    fread(readEmployees, sizeof(Employee), NUM_EMPLOYEES, fp);
+    fclose(fp);
+
+    printf("Employee data read from file:\n");
+    for (int i = 0; i < NUM_EMPLOYEES; i++)
+{
+        printf("Employee %d:\n", i + 1);
+        printf("Name: %s\n", readEmployees[i].name);
+        printf("Employee ID: %d\n", readEmployees[i].emp_id);
+        printf("Salary: %.2f\n", readEmployees[i].salary);
+        printf("Joining Date: %02d-%02d-%04d\n\n",
+               readEmployees[i].joining_date.day,
+               readEmployees[i].joining_date.month,
+               readEmployees[i].joining_date.year);
+    }
+
+    return 0;
+}
